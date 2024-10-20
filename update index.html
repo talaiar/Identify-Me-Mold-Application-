@@ -1,69 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mold Detector</title>
-    <!-- Load TensorFlow.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <!-- Load the Teachable Machine library -->
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4/dist/teachablemachine-image.min.js"></script>
+  <title>Teachable Machine</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
 </head>
 <body>
-    <h1>Mold Detector</h1>
-    
-    <!-- Button to start the prediction -->
-    <button onclick="startPrediction()">Take Picture and Predict</button>
+  <h1>Teachable Machine Predictions</h1>
+  <div id="predictions"></div>
+  <script>
+    let model;
 
-    <!-- Display prediction result -->
-    <div id="predictionResult"></div>
+    async function loadModel() {
+      model = await tmImage.load('YOUR_MODEL_JSON_URL', 'YOUR_MODEL_BIN_URL');
+      document.getElementById('predictions').innerHTML = 'Model loaded!';
+    }
 
-    <script>
-        let model;
-        const URL = "https://teachablemachine.withgoogle.com/models/JbNhrDeuF/"; // Your model's URL
+    async function predict(imageElement) {
+      const prediction = await model.predict(imageElement);
+      const predictionDiv = document.getElementById('predictions');
+      predictionDiv.innerHTML = '';
+      prediction.forEach(p => {
+        predictionDiv.innerHTML += `${p.className}: ${p.probability.toFixed(2)}<br>`;
+      });
+    }
 
-        // Load the model
-        async function loadModel() {
-            model = await tmImage.load(`${URL}model.json`);
-            console.log("Model loaded successfully!");
-        }
-
-        // Function to receive the image from Thunkable
-        function receiveImage(imageURL) {
-            const imageElement = document.createElement('img');
-            imageElement.src = imageURL;
-
-            imageElement.onload = async function() {
-                const prediction = await model.predict(imageElement);
-                document.getElementById("predictionResult").innerText = 
-                    `Prediction: ${prediction[0].className} with ${Math.round(prediction[0].probability * 100)}% confidence`;
-            };
-        }
-
-        // This function is called when you want to start the prediction process
-        function startPrediction() {
-            // Here you should call the Thunkable function that captures the image
-            // For example, you might set up your Thunkable component to directly call receiveImage
-            // with the image URL once the picture is taken.
-            // This is just a placeholder for your Thunkable logic:
-            thunkableTakePicture(); // Call Thunkable logic here
-        }
-
-        // This is a placeholder for your Thunkable picture-taking function
-        function thunkableTakePicture() {
-            // Replace this with actual Thunkable code to take a picture
-            // For instance, in Thunkable, you would call the camera component and once the picture is taken,
-            // you would get the image URL and call receiveImage with that URL.
-            const imageURL = "your_captured_image_url"; // Get the URL from Thunkable's camera component
-            receiveImage(imageURL); // Pass the captured image to receiveImage
-        }
-
-        // Load the model when the page starts
-        window.onload = function() {
-            loadModel();
-        };
-    </script>
+    loadModel();
+  </script>
 </body>
 </html>
+
 
 
