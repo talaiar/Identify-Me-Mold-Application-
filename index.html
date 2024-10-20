@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mold Detector</title>
     <!-- Load TensorFlow.js library -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
@@ -18,7 +20,7 @@
 
     <script>
         let model;
-        const URL = "https://teachablemachine.withgoogle.com/models/JbNhrDeuF/"; // URL to your model folder
+        const URL = "https://teachablemachine.withgoogle.com/models/JbNhrDeuF/"; // Your model's URL
 
         // Load the model
         async function loadModel() {
@@ -38,18 +40,29 @@
             };
         }
 
-        // Call this function when you want to start the prediction process
-        function startPrediction() {
-            // Here, you should call the Thunkable function that captures the image
-            // For example:
-            // call Web_Viewer1.EvaluateJavaScript with "receiveImage('" + app variable imageURL + "')"
+        // This function is called when you want to start the prediction process
+        async function startPrediction() {
+            // The URL parameter 'image' should be passed from Thunkable
+            const imageURL = getParameterByName('image');
+            if (imageURL) {
+                receiveImage(imageURL);
+            } else {
+                document.getElementById("predictionResult").innerText = "No image provided.";
+            }
         }
 
-        // Load model when the page starts
+        // Function to extract URL parameters
+        function getParameterByName(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Load the model when the page starts
         window.onload = function() {
             loadModel();
         };
     </script>
 </body>
 </html>
+
 
