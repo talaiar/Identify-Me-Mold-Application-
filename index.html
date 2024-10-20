@@ -18,29 +18,38 @@
 
     <script>
         let model;
-        const URL = "https://teachablemachine.withgoogle.com/models/JbNhrDeuF/"; // Replace this with the URL to your model folder
+        const URL = "https://teachablemachine.withgoogle.com/models/JbNhrDeuF/"; // URL to your model folder
 
         // Load the model
         async function loadModel() {
             model = await tmImage.load(`${URL}model.json`);
-            console.log("Model loaded!");
+            console.log("Model loaded successfully!");
         }
 
-        // Function to handle predictions
-        async function startPrediction() {
-            // Access the device camera (or photo gallery in Thunkable) to get the image
-            const image = document.createElement('img');
-            image.src = 'image_from_thunkable_or_photo'; // You can pass the image URL from Thunkable here
-            
-            // Wait for image to load before predicting
-            image.onload = async function () {
-                const prediction = await model.predict(image);
-                document.getElementById("predictionResult").innerText = `Prediction: ${prediction[0].className}`;
+        // Function to receive the image from Thunkable
+        function receiveImage(imageURL) {
+            const imageElement = document.createElement('img');
+            imageElement.src = imageURL;
+
+            imageElement.onload = async function() {
+                const prediction = await model.predict(imageElement);
+                document.getElementById("predictionResult").innerText = 
+                    `Prediction: ${prediction[0].className} with ${Math.round(prediction[0].probability * 100)}% confidence`;
             };
         }
 
+        // Call this function when you want to start the prediction process
+        function startPrediction() {
+            // Here, you should call the Thunkable function that captures the image
+            // For example:
+            // call Web_Viewer1.EvaluateJavaScript with "receiveImage('" + app variable imageURL + "')"
+        }
+
         // Load model when the page starts
-        loadModel();
+        window.onload = function() {
+            loadModel();
+        };
     </script>
 </body>
 </html>
+
