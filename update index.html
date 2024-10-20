@@ -7,28 +7,49 @@
 </head>
 <body>
   <h1>Teachable Machine Predictions</h1>
-  <div id="predictions"></div>
+  <div id="predictions">Loading model...</div>
+  <input type="file" id="imageUpload" accept="image/*" />
+  <button id="predictButton">Predict</button>
+
   <script>
     let model;
 
     async function loadModel() {
-      model = await tmImage.load('YOUR_MODEL_JSON_URL', 'YOUR_MODEL_BIN_URL');
+      const modelJsonUrl = 'https://raw.githubusercontent.com/talaiar/Identify-Me-Mold-Application-/main/model.json'; // Replace with actual model.json URL
+      const modelBinUrl = 'https://raw.githubusercontent.com/talaiar/Identify-Me-Mold-Application-/main/model.bin'; // Replace with actual model.bin URL
+
+      model = await tf.loadGraphModel(modelJsonUrl);
       document.getElementById('predictions').innerHTML = 'Model loaded!';
     }
 
     async function predict(imageElement) {
-      const prediction = await model.predict(imageElement);
+      const img = tf.browser.fromPixels(imageElement);
+      const resizedImg = tf.image.resizeBilinear(img, [224, 224]); // Adjust size to your model's input size
+      const batchedImg = resizedImg.expandDims(0); // Add a batch dimension
+      const prediction = await model.predict(batchedImg).data();
+
       const predictionDiv = document.getElementById('predictions');
       predictionDiv.innerHTML = '';
-      prediction.forEach(p => {
-        predictionDiv.innerHTML += `${p.className}: ${p.probability.toFixed(2)}<br>`;
-      });
+      for (let i = 0; i < prediction.length; i++) {
+        predictionDiv.innerHTML += `Class ${i}: ${prediction[i].toFixed(2)}<br>`;
+      }
     }
+
+    document.getElementById('predictButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('imageUpload');
+      const file = fileInput.files[0];
+      const imgElement = document.createElement('img');
+      imgElement.src = URL.createObjectURL(file);
+      imgElement.onload = () => {
+        predict(imgElement);
+      };
+    });
 
     loadModel();
   </script>
 </body>
 </html>
+
 
 
 
