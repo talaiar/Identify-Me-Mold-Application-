@@ -41,20 +41,21 @@
         }
 
         // This function is called when you want to start the prediction process
-        async function startPrediction() {
-            // The URL parameter 'image' should be passed from Thunkable
-            const imageURL = getParameterByName('image');
-            if (imageURL) {
-                receiveImage(imageURL);
-            } else {
-                document.getElementById("predictionResult").innerText = "No image provided.";
-            }
+        function startPrediction() {
+            // Here you should call the Thunkable function that captures the image
+            // For example, you might set up your Thunkable component to directly call receiveImage
+            // with the image URL once the picture is taken.
+            // This is just a placeholder for your Thunkable logic:
+            thunkableTakePicture(); // Call Thunkable logic here
         }
 
-        // Function to extract URL parameters
-        function getParameterByName(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        // This is a placeholder for your Thunkable picture-taking function
+        function thunkableTakePicture() {
+            // Replace this with actual Thunkable code to take a picture
+            // For instance, in Thunkable, you would call the camera component and once the picture is taken,
+            // you would get the image URL and call receiveImage with that URL.
+            const imageURL = "your_captured_image_url"; // Get the URL from Thunkable's camera component
+            receiveImage(imageURL); // Pass the captured image to receiveImage
         }
 
         // Load the model when the page starts
